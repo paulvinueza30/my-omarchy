@@ -6,10 +6,10 @@ WHISPER_DIR="${WHISPER_DIR:-${HOME}/whisper.cpp}"
 WHISPER_BIN="${WHISPER_BIN:-${WHISPER_DIR}/build/bin/whisper-cli}"
 WHISPER_MODEL="${WHISPER_MODEL:-${WHISPER_DIR}/models/ggml-base.en.bin}"
 
-# Get script directory (works regardless of where script is located)
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-RECORDING_DIR="${SCRIPT_DIR}/recordings"
-TRANSCRIPT_DIR="${SCRIPT_DIR}/transcripts"
+# Use XDG Base Directory specification for data files
+HYPRFLOW_DATA_DIR="${XDG_DATA_HOME:-${HOME}/.local/share}/hyprflow"
+RECORDING_DIR="${HYPRFLOW_DATA_DIR}/recordings"
+TRANSCRIPT_DIR="${HYPRFLOW_DATA_DIR}/transcripts"
 STATE_FILE="/tmp/hyprflow.state"
 
 # Validate dependencies
@@ -43,8 +43,17 @@ toggle_indicator() {
   fi
 }
 
-if pgrep -f "pw-record.*hyprflow" > /dev/null 2>&1; then
-    pkill -SIGINT -f "pw-record.*hyprflow"
+# Find pw-record process writing to our recordings directory
+find_recording_process() {
+  ps aux | grep -E "[p]w-record.*${RECORDING_DIR}" | awk '{print $2}' | head -1 || true
+}
+
+RECORDING_PID=$(find_recording_process)
+
+if [ -n "$RECORDING_PID" ]; then
+    kill -SIGINT "$RECORDING_PID" 2>/dev/null || true
+    # Wait a moment for the file to be fully written
+    sleep 0.5
 
     if [ -f "$STATE_FILE" ]; then
         source "$STATE_FILE"
@@ -88,3 +97,4 @@ fi
 # 4. Do not change the original meaning or tone.
 # 5. Output ONLY the final polished text. No introductions like 'Here is the text'.
 # "
+

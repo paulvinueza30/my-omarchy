@@ -27,6 +27,16 @@ else
 fi
 echo ""
 
+# Install ColorLS (depends on Ruby from dev-langs)
+echo "=== Installing ColorLS ==="
+if [ -f "${SCRIPT_DIR}/install-color-ls.sh" ]; then
+  bash "${SCRIPT_DIR}/install-color-ls.sh"
+  echo "✓ ColorLS installed"
+else
+  echo "⚠ install-color-ls.sh not found, skipping..."
+fi
+echo ""
+
 # Install programs
 echo "=== Installing programs ==="
 if [ -f "${SCRIPT_DIR}/install-programs.sh" ]; then

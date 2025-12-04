@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if ! command -v pacman >/dev/null 2>&1; then
-  echo "pacman not found"
+if ! command -v yay >/dev/null 2>&1; then
+  echo "yay not found. Please install yay first."
   exit 1
 fi
 
@@ -13,15 +13,12 @@ packages=(
   nodejs
   npm
   jdk-openjdk
-  rustup
+  ruby
 )
 
-sudo pacman -Syu --noconfirm --needed "${packages[@]}"
+yay -S --noconfirm --needed "${packages[@]}"
 
 if command -v npm >/dev/null 2>&1; then
   sudo npm install -g typescript
 fi
 
-if command -v rustup >/dev/null 2>&1; then
-  rustup default stable || true
-fi

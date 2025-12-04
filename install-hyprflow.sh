@@ -88,16 +88,37 @@ else
   echo "✓ Model already exists: $MODEL_FILE"
 fi
 
-# Copy hyprflow script to home directory
+# Install hyprflow script to XDG Base Directory location
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 HYPRFLOW_SOURCE="${SCRIPT_DIR}/hyprflow"
-HYPRFLOW_DEST="${HOME}/hyprflow"
+HYPRFLOW_DATA_DIR="${XDG_DATA_HOME:-${HOME}/.local/share}/hyprflow"
+HYPRFLOW_BIN_DIR="${HOME}/.local/bin"
+HYPRFLOW_SCRIPT_DEST="${HYPRFLOW_DATA_DIR}/hyprflow"
+HYPRFLOW_SYMLINK="${HYPRFLOW_BIN_DIR}/hyprflow"
 
 if [ -f "$HYPRFLOW_SOURCE" ]; then
-  echo "Copying hyprflow script to home directory..."
-  cp "$HYPRFLOW_SOURCE" "$HYPRFLOW_DEST"
-  chmod +x "$HYPRFLOW_DEST"
-  echo "✓ Hyprflow script installed to ${HYPRFLOW_DEST}"
+  echo "Installing hyprflow to XDG Base Directory location..."
+  
+  # Create directories
+  mkdir -p "${HYPRFLOW_DATA_DIR}/recordings" "${HYPRFLOW_DATA_DIR}/transcripts"
+  mkdir -p "${HYPRFLOW_BIN_DIR}"
+  
+  # Copy script to data directory
+  cp "$HYPRFLOW_SOURCE" "$HYPRFLOW_SCRIPT_DEST"
+  chmod +x "$HYPRFLOW_SCRIPT_DEST"
+  echo "✓ Hyprflow script installed to ${HYPRFLOW_SCRIPT_DEST}"
+  
+  # Create symlink in bin directory for PATH access
+  ln -sf "$HYPRFLOW_SCRIPT_DEST" "$HYPRFLOW_SYMLINK"
+  echo "✓ Symlink created at ${HYPRFLOW_SYMLINK}"
+  
+  # Ensure ~/.local/bin is in PATH
+  if ! echo "$PATH" | grep -q "${HOME}/.local/bin"; then
+    echo ""
+    echo "⚠ Warning: ~/.local/bin is not in your PATH"
+    echo "   Add this to your shell config (~/.bashrc or ~/.zshrc):"
+    echo "   export PATH=\"\${HOME}/.local/bin:\${PATH}\""
+  fi
 else
   echo "⚠ hyprflow script not found at ${HYPRFLOW_SOURCE}"
   echo "   Please ensure the script exists in the same directory as install-hyprflow.sh"
@@ -107,9 +128,13 @@ echo ""
 echo "=== Hyprflow dependencies installed! ==="
 echo ""
 echo "Next steps:"
-echo "1. The hyprflow script has been copied to: ${HYPRFLOW_DEST}"
-echo "   (Paths are auto-detected, but you can override with environment variables)"
+echo "1. The hyprflow script has been installed to: ${HYPRFLOW_SCRIPT_DEST}"
+echo "   Recordings will be saved to: ${HYPRFLOW_DATA_DIR}/recordings/"
+echo "   Transcripts will be saved to: ${HYPRFLOW_DATA_DIR}/transcripts/"
+echo "   (Paths are auto-detected using XDG Base Directory specification)"
 echo ""
 echo "2. Add keybind to Hyprland config:"
-echo "   bind = SUPER, SPACE, exec, ${HYPRFLOW_DEST}"
+echo "   bind = SUPER SHIFT, H, exec, hyprflow"
+echo ""
+echo "3. If ~/.local/bin is not in PATH, add it to your shell config"
 
