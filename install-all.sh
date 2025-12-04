@@ -7,13 +7,13 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 echo "Starting installation of all components..."
 echo ""
 
-# Install system packages (CUDA, etc.)
-echo "=== Installing system packages ==="
-if [ -f "${SCRIPT_DIR}/install-packages.sh" ]; then
-  bash "${SCRIPT_DIR}/install-packages.sh"
-  echo "✓ System packages installed"
+# Install graphics packages (CUDA, Vulkan, etc.)
+echo "=== Installing graphics packages ==="
+if [ -f "${SCRIPT_DIR}/install-graphics.sh" ]; then
+  bash "${SCRIPT_DIR}/install-graphics.sh"
+  echo "✓ Graphics packages installed"
 else
-  echo "⚠ install-packages.sh not found, skipping..."
+  echo "⚠ install-graphics.sh not found, skipping..."
 fi
 echo ""
 
