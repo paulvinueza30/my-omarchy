@@ -36,7 +36,7 @@ fi
 
 echo "Removing old configs..."
 rm -rf ~/.config/nvim ~/.config/starship.toml ~/.local/share/nvim/ ~/.cache/nvim/ || true
-rm -rf ~/.config/kitty ~/.config/hypr ~/.config/waybar ~/.config/omarchy ~/.config/fastfetch || true
+rm -rf ~/.config/kitty ~/.config/hypr ~/.config/waybar ~/.config/fastfetch || true
 rm -rf ~/.zshrc ~/.oh-my-zsh || true
 
 echo "Setting up dotfiles with stow..."
@@ -48,7 +48,6 @@ stow_packages=(
   kitty
   hypr
   waybar
-  omarchy
   fastfetch
 )
 
