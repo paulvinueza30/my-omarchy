@@ -37,6 +37,16 @@ else
 fi
 echo ""
 
+# Install kitty
+echo "=== Installing kitty ==="
+if [ -f "${SCRIPT_DIR}/install-kitty.sh" ]; then
+  bash "${SCRIPT_DIR}/install-kitty.sh"
+  echo "✓ Kitty installed"
+else
+  echo "⚠ install-kitty.sh not found, skipping..."
+fi
+echo ""
+
 # Install zsh setup
 echo "=== Installing zsh setup ==="
 if [ -f "${SCRIPT_DIR}/install-zsh-setup.sh" ]; then

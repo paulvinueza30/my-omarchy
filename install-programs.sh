@@ -9,7 +9,6 @@ fi
 programs=(
   anki
   stow
-  kitty
   cursor-bin
 )
 
