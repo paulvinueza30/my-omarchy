@@ -69,6 +69,18 @@ if [ -d ".oh-my-zsh" ]; then
   ln -sf "$(pwd)/.oh-my-zsh" ~/.oh-my-zsh
 fi
 
+# Create symlink from ~/.zshrc to ~/.config/zsh/.zshrc if it exists
+if [ -f ~/.config/zsh/.zshrc ]; then
+  echo "Creating symlink from ~/.zshrc to ~/.config/zsh/.zshrc..."
+  if [ -L ~/.zshrc ] || [ -f ~/.zshrc ]; then
+    rm -f ~/.zshrc
+  fi
+  ln -sf ~/.config/zsh/.zshrc ~/.zshrc
+  echo "✓ Zsh config symlink created"
+else
+  echo "⚠ ~/.config/zsh/.zshrc not found - make sure zsh package is stowed correctly"
+fi
+
 cd "$ORIGINAL_DIR"
 
 echo "✓ Dotfiles setup complete!"
