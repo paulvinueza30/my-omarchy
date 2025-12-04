@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Auto-detect paths based on $HOME
+WHISPER_DIR="${WHISPER_DIR:-${HOME}/whisper.cpp}"
+WHISPER_BIN="${WHISPER_BIN:-${WHISPER_DIR}/build/bin/whisper-cli}"
+WHISPER_MODEL="${WHISPER_MODEL:-${WHISPER_DIR}/models/ggml-base.en.bin}"
+
+# Get script directory (works regardless of where script is located)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+RECORDING_DIR="${SCRIPT_DIR}/recordings"
+TRANSCRIPT_DIR="${SCRIPT_DIR}/transcripts"
+STATE_FILE="/tmp/hyprflow.state"
+
+# Validate dependencies
+if ! command -v pw-record >/dev/null 2>&1; then
+  echo "Error: pw-record not found. Please install pipewire."
+  exit 1
+fi
+
+if ! command -v wl-copy >/dev/null 2>&1; then
+  echo "Error: wl-copy not found. Please install wl-clipboard."
+  exit 1
+fi
+
+if [ ! -f "$WHISPER_BIN" ]; then
+  echo "Error: whisper-cli not found at $WHISPER_BIN"
+  echo "Please set WHISPER_BIN or run install-hyprflow.sh"
+  exit 1
+fi
+
+if [ ! -f "$WHISPER_MODEL" ]; then
+  echo "Error: Whisper model not found at $WHISPER_MODEL"
+  echo "Please set WHISPER_MODEL or run install-hyprflow.sh"
+  exit 1
+fi
+
+mkdir -p "$RECORDING_DIR" "$TRANSCRIPT_DIR"
+
+toggle_indicator() {
+  if command -v waybar >/dev/null 2>&1; then
+    pkill -RTMIN+9 waybar 2>/dev/null || true
+  fi
+}
+
+if pgrep -f "pw-record.*hyprflow" > /dev/null 2>&1; then
+    pkill -SIGINT -f "pw-record.*hyprflow"
+
+    if [ -f "$STATE_FILE" ]; then
+        source "$STATE_FILE"
+        RECORDING_FILE="${RECORDING_DIR}/${TIME}.wav"
+        TRANSCRIPT_FILE="${TRANSCRIPT_DIR}/${TIME}_raw.txt"
+
+        if [ -f "$RECORDING_FILE" ]; then
+            "$WHISPER_BIN" -m "$WHISPER_MODEL" -f "$RECORDING_FILE" -nt -t "$(nproc)" 2>/dev/null > "$TRANSCRIPT_FILE"
+
+            toggle_indicator
+
+            # Trim leading/trailing whitespace and copy to clipboard
+            if [ -f "$TRANSCRIPT_FILE" ]; then
+                sed 's/^[[:space:]]*//;s/[[:space:]]*$//' "$TRANSCRIPT_FILE" | tr -d '\n' | wl-copy
+                if command -v hyprctl >/dev/null 2>&1; then
+                    hyprctl dispatch sendshortcut "CTRL SHIFT, V, activewindow" 2>/dev/null || true
+                fi
+            fi
+        fi
+        rm -f "$STATE_FILE"
+    fi
+else
+    TIME=$(date +%s)
+    echo "TIME=$TIME" > "$STATE_FILE"
+    RECORDING_FILE="${RECORDING_DIR}/${TIME}.wav"
+
+    toggle_indicator
+
+    pw-record --rate 16000 --channels 1 "$RECORDING_FILE" 2>/dev/null &
+fi
+
+# Postprocessing not a priority right now.
+# API_KEY="${GROQ_API_KEY:?Error: Please set API_KEY environment variable.}"
+# MODEL="llama-3.3-70b-versatile"
+# SYSTEM_PROMPT="System: You are an expert voice-to-text editor. 
+# Your goal is to rewrite the following transcript to be professional, concise, and grammatically correct. 
+# Rules:
+# 1. Remove all filler words (um, ah, like, you know) and stutters.
+# 2. Fix grammar and punctuation errors.
+# 3. If the user lists multiple items, steps, or points, format them as a clean Markdown bulleted list.
+# 4. Do not change the original meaning or tone.
+# 5. Output ONLY the final polished text. No introductions like 'Here is the text'.
+# "
