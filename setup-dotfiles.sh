@@ -7,31 +7,31 @@ REPO_URL="https://github.com/paulvinueza30/dotfiles"
 REPO_NAME="dotfiles"
 
 is_stow_installed() {
-  pacman -Qi "stow" &> /dev/null
+	pacman -Qi "stow" &>/dev/null
 }
 
 if ! is_stow_installed; then
-  echo "Stow is not installed. Please run ./install-programs.sh first."
-  exit 1
+	echo "Stow is not installed. Please run ./install-programs.sh first."
+	exit 1
 fi
 
 cd ~
 
 # Check if the repository already exists
 if [ -d "$REPO_NAME" ]; then
-  echo "Repository '$REPO_NAME' already exists. Updating..."
-  cd "$REPO_NAME"
-  git pull || true
+	echo "Repository '$REPO_NAME' already exists. Updating..."
+	cd "$REPO_NAME"
+	git pull || true
 else
-  echo "Cloning repository..."
-  git clone "$REPO_URL"
-  cd "$REPO_NAME"
+	echo "Cloning repository..."
+	git clone "$REPO_URL"
+	cd "$REPO_NAME"
 fi
 
 # Verify we're in the repository directory
 if [ "$(basename $(pwd))" != "$REPO_NAME" ]; then
-  echo "Failed to access the repository directory."
-  exit 1
+	echo "Failed to access the repository directory."
+	exit 1
 fi
 
 echo "Removing old configs..."
@@ -43,45 +43,54 @@ echo "Setting up dotfiles with stow..."
 
 # Stow packages that exist in the repository
 stow_packages=(
-  zsh
-  nvim
-  kitty
-  hypr
-  waybar
-  fastfetch
+	zsh
+	nvim
+	kitty
+	hypr
+	waybar
+	fastfetch
 )
 
 for package in "${stow_packages[@]}"; do
-  if [ -d "$package" ]; then
-    echo "Stowing $package..."
-    stow "$package"
-  else
-    echo "⚠ Package '$package' not found in repository, skipping..."
-  fi
+	if [ -d "$package" ]; then
+		echo "Stowing $package..."
+		stow "$package"
+	else
+		echo "⚠ Package '$package' not found in repository, skipping..."
+	fi
 done
 
 # Handle .oh-my-zsh separately if it exists
 if [ -d ".oh-my-zsh" ]; then
-  echo "Setting up .oh-my-zsh..."
-  if [ -L ~/.oh-my-zsh ]; then
-    rm ~/.oh-my-zsh
-  fi
-  ln -sf "$(pwd)/.oh-my-zsh" ~/.oh-my-zsh
+	echo "Setting up .oh-my-zsh..."
+	if [ -L ~/.oh-my-zsh ]; then
+		rm ~/.oh-my-zsh
+	fi
+	ln -sf "$(pwd)/.oh-my-zsh" ~/.oh-my-zsh
 fi
 
 # Create symlink from ~/.zshrc to ~/.config/zsh/.zshrc if it exists
 if [ -f ~/.config/zsh/.zshrc ]; then
-  echo "Creating symlink from ~/.zshrc to ~/.config/zsh/.zshrc..."
-  if [ -L ~/.zshrc ] || [ -f ~/.zshrc ]; then
-    rm -f ~/.zshrc
-  fi
-  ln -sf ~/.config/zsh/.zshrc ~/.zshrc
-  echo "✓ Zsh config symlink created"
+	echo "Creating symlink from ~/.zshrc to ~/.config/zsh/.zshrc..."
+	if [ -L ~/.zshrc ] || [ -f ~/.zshrc ]; then
+		rm -f ~/.zshrc
+	fi
+	ln -sf ~/.config/zsh/.zshrc ~/.zshrc
+	echo "✓ Zsh config symlink created"
 else
-  echo "⚠ ~/.config/zsh/.zshrc not found - make sure zsh package is stowed correctly"
+	echo "⚠ ~/.config/zsh/.zshrc not found - make sure zsh package is stowed correctly"
 fi
 
 cd "$ORIGINAL_DIR"
 
-echo "✓ Dotfiles setup complete!"
+echo "Creating auto-sync cron for dotfiles"
+# Get any running crons and store them in temp file
+crontab -l >sync-cron 2>/dev/null || true
 
+CRON_JOB="0 * * * * $PWD/sync-dotfiles.sh >> $HOME/.local/log/cron-debug.log 2>&1"
+echo "${CRON_JOB}" >>sync-cron
+crontab sync-cron
+rm sync-cron
+echo "✓ Cron created "
+
+echo "✓ Dotfiles setup complete!"

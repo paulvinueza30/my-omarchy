@@ -1,13 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Get the directory where this script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 echo "Starting installation of all components..."
 echo ""
 
-# Install graphics packages (CUDA, Vulkan, etc.)
 echo "=== Installing graphics packages ==="
 if [ -f "${SCRIPT_DIR}/install-graphics.sh" ]; then
   bash "${SCRIPT_DIR}/install-graphics.sh"
@@ -17,7 +15,6 @@ else
 fi
 echo ""
 
-# Install development languages
 echo "=== Installing development languages ==="
 if [ -f "${SCRIPT_DIR}/install-dev-langs.sh" ]; then
   bash "${SCRIPT_DIR}/install-dev-langs.sh"
@@ -27,7 +24,32 @@ else
 fi
 echo ""
 
-# Install ColorLS (depends on Ruby from dev-langs)
+echo "=== Installing GitHub CLI ==="
+if [ -f "${SCRIPT_DIR}/install-gh-cli.sh" ]; then
+  bash "${SCRIPT_DIR}/install-gh-cli.sh"
+  echo "✓ GitHub CLI installed"
+else
+  echo "⚠ install-gh-cli.sh not found, skipping..."
+fi
+echo ""
+
+if [ -f "${SCRIPT_DIR}/setup-gh-auth.sh" ]; then
+  bash "${SCRIPT_DIR}/setup-gh-auth.sh"
+  echo "✓ GitHub CLI setup"
+else
+  echo "⚠ setup-gh-auth.sh not found, skipping..."
+fi
+echo ""
+
+echo "=== Installing cronie ==="
+if [ -f "${SCRIPT_DIR}/install-cronie.sh" ]; then
+  bash "${SCRIPT_DIR}/install-cronie.sh"
+  echo "✓ Cronie install complete"
+else
+  echo "⚠ install-cronie.sh not found, skipping..."
+fi
+echo ""
+
 echo "=== Installing ColorLS ==="
 if [ -f "${SCRIPT_DIR}/install-color-ls.sh" ]; then
   bash "${SCRIPT_DIR}/install-color-ls.sh"
@@ -37,7 +59,6 @@ else
 fi
 echo ""
 
-# Install programs
 echo "=== Installing programs ==="
 if [ -f "${SCRIPT_DIR}/install-programs.sh" ]; then
   bash "${SCRIPT_DIR}/install-programs.sh"
@@ -47,7 +68,6 @@ else
 fi
 echo ""
 
-# Install kitty
 echo "=== Installing kitty ==="
 if [ -f "${SCRIPT_DIR}/install-kitty.sh" ]; then
   bash "${SCRIPT_DIR}/install-kitty.sh"
@@ -57,7 +77,6 @@ else
 fi
 echo ""
 
-# Install zsh setup
 echo "=== Installing zsh setup ==="
 if [ -f "${SCRIPT_DIR}/install-zsh-setup.sh" ]; then
   bash "${SCRIPT_DIR}/install-zsh-setup.sh"
@@ -67,7 +86,6 @@ else
 fi
 echo ""
 
-# Install webapps
 echo "=== Installing webapps ==="
 if [ -f "${SCRIPT_DIR}/install-webapps.sh" ]; then
   bash "${SCRIPT_DIR}/install-webapps.sh"
@@ -77,7 +95,6 @@ else
 fi
 echo ""
 
-# Install hyprflow
 echo "=== Installing hyprflow ==="
 if [ -f "${SCRIPT_DIR}/install-hyprflow.sh" ]; then
   bash "${SCRIPT_DIR}/install-hyprflow.sh"
@@ -87,7 +104,6 @@ else
 fi
 echo ""
 
-# Setup dotfiles
 echo "=== Setting up dotfiles ==="
 if [ -f "${SCRIPT_DIR}/setup-dotfiles.sh" ]; then
   bash "${SCRIPT_DIR}/setup-dotfiles.sh"
@@ -97,7 +113,6 @@ else
 fi
 echo ""
 
-# Set shell to zsh
 echo "=== Setting default shell ==="
 if [ -f "${SCRIPT_DIR}/set-shell.sh" ]; then
   bash "${SCRIPT_DIR}/set-shell.sh"
