@@ -1,0 +1,1 @@
+0 * * * * /home/paulmv/my-omarchy/sync-dotfiles.sh >> /home/paulmv/.local/log/cron-debug.log 2>&1
