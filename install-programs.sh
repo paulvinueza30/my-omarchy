@@ -7,8 +7,8 @@ if ! command -v yay >/dev/null 2>&1; then
 fi
 
 programs=(
-  anki
   stow
+  zen-browser-binary
   cursor-bin
 )
 
