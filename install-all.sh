@@ -135,9 +135,16 @@ echo "=== Reloading Hyprland === "
 if [ -f "${SCRIPT_DIR}/reload-hyprland.sh" ]; then
   bash "${SCRIPT_DIR}/reload-hyprland.sh"
   echo "✓ Hyprland Reloaded"
-
+else
   echo "⚠ reload-hyprland.sh not found, skipping..."
 fi
-echo ""
 
-echo "=== All installations complete! ==="
+echo "=== Intiting Homelab ssh === "
+if [ -f "$SCRIPT_DIR/init-homelab-ssh.sh" ]; then
+  bash "$SCRIPT_DIR/init-homelab-ssh.sh"
+  echo "✓ Homelab Inited"
+else
+  echo "⚠ init-homelab-ssh.sh not found, skipping..."
+fi
+echo ""
+"=== All installations complete! ==="
