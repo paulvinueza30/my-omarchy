@@ -8,7 +8,7 @@ fi
 
 programs=(
   stow
-  zen-browser-binary
+  zen-browser-bin
   cursor-bin
 )
 
