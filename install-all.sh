@@ -95,12 +95,12 @@ else
 fi
 echo ""
 
-echo "=== Installing hyprflow ==="
-if [ -f "${SCRIPT_DIR}/install-hyprflow.sh" ]; then
-  bash "${SCRIPT_DIR}/install-hyprflow.sh"
-  echo "✓ Hyprflow installed"
+echo "=== Installing Voxtype ==="
+if [ -f "${SCRIPT_DIR}/install-voxtype.sh" ]; then
+  bash "${SCRIPT_DIR}/install-voxtype.sh"
+  echo "✓ Voxtype installed"
 else
-  echo "⚠ install-hyprflow.sh not found, skipping..."
+  echo "⚠ install-voxtype.sh not found, skipping..."
 fi
 echo ""
 
