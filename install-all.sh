@@ -68,12 +68,12 @@ else
 fi
 echo ""
 
-echo "=== Installing kitty ==="
-if [ -f "${SCRIPT_DIR}/install-kitty.sh" ]; then
-  bash "${SCRIPT_DIR}/install-kitty.sh"
-  echo "✓ Kitty installed"
+echo "=== Installing ghostty ==="
+if [ -f "${SCRIPT_DIR}/install-ghostty.sh" ]; then
+  bash "${SCRIPT_DIR}/install-ghostty.sh"
+  echo "✓ Ghostty installed"
 else
-  echo "⚠ install-kitty.sh not found, skipping..."
+  echo "⚠ install-ghostty.sh not found, skipping..."
 fi
 echo ""
 

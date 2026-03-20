@@ -36,7 +36,7 @@ fi
 
 echo "Removing old configs..."
 rm -rf ~/.config/nvim ~/.config/starship.toml ~/.local/share/nvim/ ~/.cache/nvim/ || true
-rm -rf ~/.config/kitty ~/.config/hypr ~/.config/waybar ~/.config/fastfetch || true
+rm -rf ~/.config/ghostty ~/.config/kitty ~/.config/hypr ~/.config/waybar ~/.config/fastfetch ~/.config/atuin ~/.tmux ~/.tmux.conf || true
 rm -rf ~/.zshrc ~/.oh-my-zsh || true
 
 echo "Setting up dotfiles with stow..."
@@ -45,7 +45,10 @@ echo "Setting up dotfiles with stow..."
 stow_packages=(
 	zsh
 	nvim
-	kitty
+	ghostty
+	starship
+	tmux
+	atuin
 	hypr
 	waybar
 	fastfetch

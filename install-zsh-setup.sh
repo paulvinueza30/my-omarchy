@@ -16,7 +16,8 @@ pkgs=(
   zsh-autosuggestions
   zsh-syntax-highlighting
   zsh-you-should-use
-  zsh-theme-powerlevel10k
+  starship
+  atuin
 )
 
 for p in "${pkgs[@]}"; do
