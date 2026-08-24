@@ -126,7 +126,7 @@ echo "=== Getting Obsidian Vault From Github ==="
 if [ -f "${SCRIPT_DIR}/get-obsidian-vault.sh" ]; then
   bash "${SCRIPT_DIR}/get-obsidian-vault.sh"
   echo "✓ Got Vault"
-
+else
   echo "⚠ get-obsidian-vault.sh not found, skipping..."
 fi
 echo ""
@@ -147,4 +147,4 @@ else
   echo "⚠ init-homelab-ssh.sh not found, skipping..."
 fi
 echo ""
-"=== All installations complete! ==="
+echo "=== All installations complete! ==="
